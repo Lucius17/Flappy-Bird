@@ -13,6 +13,33 @@ clock = pygame.time.Clock()
 pipe_speed = 5
 pipe_gap = 200
 pipe_list = []
+img_bird = pygame.image.load("bird.png")
+img_bird = pygame.transform.scale(img_bird, (64, 48))
+
+
+class Bird:
+    def __init__(self):
+        self.x = 100
+        self.y = 400
+        self.fly = False
+        self.vel_y = 10
+
+    def move(self):
+        # gravity
+        self.vel_y += 0.5
+        if self.vel_y > 5:
+            self.vel_y = 5
+        if self.y < 800:
+            self.y += int(self.vel_y)
+        if self.fly:
+            self.vel_y = -10
+            self.fly = False
+
+    def draw(self):
+        screen.blit(img_bird, (self.x, self.y))
+
+
+bird = Bird()
 
 
 class Pipe:
@@ -31,6 +58,7 @@ class Pipe:
 
 while True:
     screen.blit(background, (0, 0))
+
     if len(pipe_list) < 1:
         pipe_list.append(Pipe())
     for pipe in pipe_list:
@@ -40,7 +68,12 @@ while True:
             pipe_list.remove(pipe)
 
     for event in pygame.event.get():  # event handling
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_SPACE:
+                bird.fly = True
         if event.type == pygame.QUIT:
             sys.exit()
+    bird.move()
+    bird.draw()
     pygame.display.update()
     clock.tick(60)
