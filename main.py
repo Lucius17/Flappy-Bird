@@ -23,6 +23,8 @@ class Bird:
         self.y = 400
         self.fly = False
         self.vel_y = 10
+        self.dead = False
+        self.hit_box = pygame.Rect(self.x, self.y, 64, 64)
 
     def move(self):
         # gravity
@@ -31,9 +33,10 @@ class Bird:
             self.vel_y = 5
         if self.y < 800:
             self.y += int(self.vel_y)
-        if self.fly:
+        if self.fly and not self.dead:
             self.vel_y = -10
             self.fly = False
+        self.hit_box = pygame.Rect(self.x, self.y, 64, 64)
 
     def draw(self):
         screen.blit(img_bird, (self.x, self.y))
@@ -46,6 +49,8 @@ class Pipe:
     def __init__(self):
         self.x = 450
         self.y = random.randint(150, 700)
+        self.hit_box = pygame.Rect(
+            self.x, self.y, img_pipe.get_width(), img_pipe.get_height())
 
     def draw(self):
         screen.blit(img_pipe, (self.x, self.y))
@@ -54,6 +59,8 @@ class Pipe:
 
     def move(self):
         self.x -= pipe_speed
+        self.hit_box = pygame.Rect(
+            self.x, self.y, img_pipe.get_width(), img_pipe.get_height())
 
 
 while True:
@@ -66,6 +73,7 @@ while True:
         pipe.move()
         if pipe.x < -100:
             pipe_list.remove(pipe)
+        # bird.dead = True
 
     for event in pygame.event.get():  # event handling
         if event.type == pygame.KEYDOWN:
@@ -75,5 +83,7 @@ while True:
             sys.exit()
     bird.move()
     bird.draw()
+    print(bird.x, bird.y)
+
     pygame.display.update()
     clock.tick(60)
