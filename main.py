@@ -29,7 +29,7 @@ bird_color = pygame.transform.scale(bird_color, (64, 48))
 
 x, y = 600, 800
 
-bird_amount = 50
+bird_amount = 10
 epsilon = 0.9
 discount_factor = 0.9
 learning_rate = 0.6
@@ -100,7 +100,7 @@ class Bird:
             else:
                 self.lower = 0
             if self.hit_box.colliderect(pipe_list[0].hit_box_down) or self.hit_box.colliderect(pipe_list[0].hit_box_up):
-                self.reward = -100
+                self.reward = -1000
                 self.dead = True
             if self.hit_box.colliderect(pipe_list[0].hit_box_coin) and not self.collected:
                 self.collected = True
@@ -212,10 +212,8 @@ while True:
 
             # receive the reward for moving to the new state, and calculate the temporal difference
             reward = bird.reward
-            if action_index == 1:
-                reward = -1
-            else:
-                reward = 1
+            if not bird.dead:
+                reward += 1
             # print(bird.height_dif)
             # if reward > 0:
             #     print("Reward: ", reward)
@@ -273,9 +271,9 @@ while True:
                 bird_list.remove(bird)
             else:
                 episodes += 1
-                super_bird = np.zeros((x, y, 2, 2))
-                for bird in dead_birds:
-                    super_bird = np.add(bird, super_bird)
+                # super_bird = np.zeros((x, y, 2, 2))
+                # for bird in dead_birds:
+                #     super_bird = np.add(bird, super_bird)
                 # print(super_bird.shape)
                 super_bird = bird_list[0].q_values
                 if episodes % 10 == 0:
@@ -294,4 +292,4 @@ while True:
     screen.blit(myFont.render(
         (f'Highscore: {highscore}'), True, (255, 255, 255)), (0, 30))
     pygame.display.update()
-    clock.tick(6000)
+    clock.tick(60000000)
