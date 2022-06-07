@@ -12,7 +12,7 @@ Przykładowa konfiguracja i budowa aplikacji ze źródła:
   * `https://github.com/Lucius17/Flappy-Bird.git`
 
 ## Działanie aplikacji
-Sztuczna inteligencja uczy się przez wzmacnianie. Opracowaliśmy system kar i nagród które otrzymuje model przez co coraz lepiej wie jak powinien się zachować 
+Sztuczna inteligencja uczy się przez wzmacnianie. Opracowaliśmy system kar i nagród które otrzymuje model przez co coraz lepiej wie jak powinien się zachować.
 
 ## Autorzy
 
