@@ -1,3 +1,1 @@
-# Flappy-Bird
-123123123
-elo kurwa
+# Projekt zaliczeniowy "Flappy-Bird" - Sztuczna inteligencja
