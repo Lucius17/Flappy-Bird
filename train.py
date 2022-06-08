@@ -26,7 +26,7 @@ bird_color = pygame.image.load("bird_color.png").convert_alpha()
 bird_color = pygame.transform.scale(bird_color, (64, 48))
 
 x, y = 30, 40
-
+FPS = 60
 bird_amount = 10
 epsilon = 0.99
 discount_factor = 0.8
@@ -48,18 +48,11 @@ def changColor(image, hue):
 
 
 def get_next_action(x, y, lower, epsilon, q_values):
-    # if a randomly chosen value between 0 and 1 is less than epsilon,
-    # then choose the most promising value from the Q-table for this state.
-    # print(type(q_values))
     if np.random.random() < epsilon:
-        # if np.argmax(q_values[x][y][lower], axis=0) == np.argmin(q_values[x][y][lower], axis=0):
-        #     return np.random.randint(2)
-        # else:
         t = q_values[x][y][lower]
         np.argmax(t)
         ind = np.unravel_index(np.argmax(t, axis=None), t.shape)
 
-        # print(ind[0], type(ind[0]))
         return ind[0]
 
     else:  # choose a random action
@@ -121,15 +114,6 @@ class Bird:
         screen.blit(img_bird, (self.x, self.y))
         screen.blit(self.color, (self.x, self.y))
         if len(pipe_list) > 0:
-            # pygame.draw.line(screen, (255, 0, 0), (self.x + 32,
-            #                                        self.y + 32), (pipe_list[0].x+100, pipe_list[0].y - pipe_gap), 3)
-            # pygame.draw.line(screen, (255, 0, 0), (self.x + 32,
-            #                                        self.y + 32), (pipe_list[0].x+100, pipe_list[0].y), 3)
-            # self.dist_up = round(math.dist((self.x + 32, self.y + 32),
-            #                                (pipe_list[0].x+100, pipe_list[0].y - pipe_gap)))
-            # self.dist_down = round(math.dist((self.x + 32, self.y + 32),
-            #                                  (pipe_list[0].x+100, pipe_list[0].y)))
-            # print(([dist_up, dist_down]))7
             if self.lower == 1:
                 pygame.draw.line(screen, (255, 0, 0), (self.x+32, self.y+32),
                                  (self.x+32, pipe_list[0].y), 3)
@@ -191,11 +175,14 @@ while True:
             pipe_list.remove(pipe)
             pipe_list.append(Pipe())
 
-        # bird.dead = True
-
     for event in pygame.event.get():  # event handling
         if event.type == pygame.QUIT:
             sys.exit()
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_RIGHT:
+                FPS += 15
+            if event.key == pygame.K_LEFT and FPS > 15:
+                FPS -= 15
 
     for bird in bird_list:
         if not bird.dead:
@@ -206,11 +193,10 @@ while True:
                 bird.fly = True
                 # store the old row and column indexes
             old_horizontal_dif, old_height_dif, old_lower = bird.horizontal_dif, bird.height_dif, bird.lower
-            # print(bird.horizontal_dif, bird.height_dif, bird.lower)
+
             bird.move()
             bird.draw()
 
-            # receive the reward for moving to the new state, and calculate the temporal difference
             reward = bird.reward
             if action_index == 1:
                 reward -= 0.5
@@ -218,76 +204,29 @@ while True:
                 reward += 1
             if bird.lower == 1 and bird.height_dif > old_height_dif:
                 reward -= 5
-                # print(bird.height_dif)
-                # if reward > 0:
-                #     print("Reward: ", reward)
 
             bird.reward = 0
             old_q_value = bird.q_values[old_horizontal_dif,
                                         old_height_dif, old_lower, action_index]
-            # print(old_q_value)
 
-            # old_q_value = round(old_q_value, 2)
-            # if om == old_q_value:
-            #     print("same")
-            # else:
-            #     print("different")
             temporal_difference = reward + (discount_factor * np.max(
                 bird.q_values[old_horizontal_dif,
                               old_height_dif, old_lower])) - old_q_value
-            # update the Q-value for the previous state and action pair
             new_q_value = old_q_value + (learning_rate * temporal_difference)
-            # new_q_value = round(new_q_value, 2)
 
             bird.q_values[old_horizontal_dif, old_height_dif,
                           old_lower, action_index] = new_q_value
 
             if bird.score > highscore:
                 highscore = bird.score
-                # print(bird.lower)
-            # print(type(new_q_value))
             screen.blit(myFont.render(
                 (f'{bird.score}'), True, (255, 255, 255)), (200, 60))
         else:
-            # print("still alive")
-            # action_index = 0
-            # # store the old row and column indexes
-            # old_horizontal_dif, old_height_dif, old_lower = bird.horizontal_dif, bird.height_dif, bird.lower
-            # bird.move()
-            # bird.draw()
-
-            # # receive the reward for moving to the new state, and calculate the temporal difference
-            # reward = -100
-            # # print(bird.height_dif)
-
-            # bird.reward = 0
-            # old_q_value = bird.q_values[old_horizontal_dif,
-            #                             old_height_dif, old_lower, action_index]
-            # # if om == old_q_value:
-            # #     print("same")
-            # # else:
-            # #     print("different")
-            # temporal_difference = reward + \
-            #     (discount_factor *
-            #      np.max(bird.q_values[bird.horizontal_dif, bird.height_dif, bird.lower])) - old_q_value
-
-            # # update the Q-value for the previous state and action pair
-            # new_q_value = old_q_value + (learning_rate * temporal_difference)
-
-            # bird.q_values[old_horizontal_dif][old_height_dif][old_lower][action_index] = round(
-            #     new_q_value)
-            # if bird.score > highscore:
-            #     highscore = bird.score
-
             if len(bird_list) > 1:
                 dead_birds.append(bird.q_values)
                 bird_list.remove(bird)
             else:
                 episodes += 1
-                # super_bird = np.zeros((x, y, 2, 2))
-                # for bird in dead_birds:
-                #     super_bird = np.add(bird, super_bird)
-                # print(super_bird.shape)
                 super_bird = bird_list[0].q_values
                 if episodes % 10 == 0:
                     np.save('model.npy', super_bird)
@@ -295,14 +234,9 @@ while True:
                              for i in range(bird_amount)]
                 pipe_list = [Pipe()]
                 dead_birds = []
-            # print(q_values)
-            # bird.draw()
-            # print(bird.dead)
-            # print(bird.x, bird.y)
-    # print("--------------------------------")
     screen.blit(myFont.render(
         (f'Episodes: {episodes}'), True, (255, 255, 255)), (0, 0))
     screen.blit(myFont.render(
         (f'Highscore: {highscore}'), True, (255, 255, 255)), (0, 30))
     pygame.display.update()
-    clock.tick(600)
+    clock.tick(FPS)
