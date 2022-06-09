@@ -14,8 +14,6 @@ Przykładowa konfiguracja i budowa aplikacji ze źródła:
 ## Działanie aplikacji
 Sztuczna inteligencja uczy się przez wzmacnianie. Opracowaliśmy system kar i nagród które otrzymuje model przez co coraz lepiej wie jak powinien się zachować.
 
-![unknown](https://user-images.githubusercontent.com/87764794/172707818-682c82ce-b585-43f8-985f-7d58c04ac208.png)
-
 ## Autorzy
 
 Autorami aplikacji i związanymi z nią materiałami są:
